@@ -196,12 +196,17 @@ public class PythonDistributionAnalyzer extends AbstractFileTypeAnalyzer {
             if (metadata || PKG_INFO.equals(name)) {
                 final File parent = actualFile.getParentFile();
                 final String parentName = parent.getName();
-                dependency.setDisplayFileName(parentName + "/" + name);
+                
                 if (parent.isDirectory()
                         && (metadata && parentName.endsWith(".dist-info")
                         || parentName.endsWith(".egg-info") || "EGG-INFO"
                         .equals(parentName))) {
                     collectWheelMetadata(dependency, actualFile);
+                }
+                else
+                {
+                	  //only do this as a fall back
+                	  dependency.setDisplayFileName(parentName + "/" + name);
                 }
             }
         }
@@ -313,6 +318,20 @@ public class PythonDistributionAnalyzer extends AbstractFileTypeAnalyzer {
             JarAnalyzer
                     .addDescription(dependency, summary, METADATA, "summary");
         }
+        
+        //set the name based on the package info
+        final String name = headers.getHeader("Name", null);
+        final String version = headers.getHeader("Version", null);
+        if (StringUtils.isNotBlank(name)) {
+        		if (StringUtils.isNoneBlank(version)) {
+        			dependency.setDisplayFileName(name+":"+version);
+        		}
+        		else {
+        			dependency.setDisplayFileName(name);
+        		}
+        			
+        }
+        	
     }
 
     /**

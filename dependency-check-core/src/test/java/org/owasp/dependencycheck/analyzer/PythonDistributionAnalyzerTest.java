@@ -29,6 +29,7 @@ import java.io.File;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 /**
@@ -115,7 +116,7 @@ public class PythonDistributionAnalyzerTest extends BaseTest {
         final Dependency result = new Dependency(BaseTest.getResourceAsFile(
                 this, "python/site-packages/Django-1.7.2.dist-info/METADATA"));
         djangoAssertions(result);
-        assertEquals("Django-1.7.2.dist-info/METADATA", result.getDisplayFileName());
+        assertEquals("Django:1.7.2", result.getDisplayFileName());
     }
 
     private void djangoAssertions(final Dependency result)
@@ -176,6 +177,7 @@ public class PythonDistributionAnalyzerTest extends BaseTest {
         analyzer.analyze(result, null);
         assertTrue("Expected vendor evidence to contain \"example\".", result
                 .getVendorEvidence().toString().contains("example"));
+        assertFalse(result.getDisplayFileName().equalsIgnoreCase("EGG-INFO/PKG-INFO"));
         for (final Evidence e : result.getVersionEvidence()) {
             if ("0.0.1".equals(e.getValue())) {
                 found = true;
